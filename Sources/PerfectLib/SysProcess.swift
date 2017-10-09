@@ -19,9 +19,9 @@
 
 #if os(Linux)
 	import SwiftGlibc
-	let WUNTRACED = Int32(2)
-	let WNOHANG = Int32(1)
-	let SIGTERM = Int32(15)
+	public let WUNTRACED = Int32(2)
+	public let WNOHANG = Int32(1)
+	public let SIGTERM = Int32(15)
 #else
 	import Darwin
 #endif
