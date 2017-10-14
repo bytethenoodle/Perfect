@@ -124,16 +124,6 @@ public struct Dir {
 		return internalPath.resolvingSymlinksInFilePath
 	}
 
-#if os(Linux)
-    func readDir(_ d: OpaquePointer, _ dirEnt: inout dirent, _ endPtr: UnsafeMutablePointer<UnsafeMutablePointer<dirent>?>!) -> Int32 {
-        return readdir_r(d, &dirEnt, endPtr)
-    }
-#else
-    func readDir(_ d: UnsafeMutablePointer<DIR>, _ dirEnt: inout dirent, _ endPtr: UnsafeMutablePointer<UnsafeMutablePointer<dirent>?>!) -> Int32 {
-        return readdir_r(d, &dirEnt, endPtr)
-    }
-#endif
-
 	/// Enumerates the contents of the directory passing the name of each contained element to the provided callback.
 	/// - parameter closure: The callback which will receive each entry's name
 	/// - throws: `PerfectError.FileError`
@@ -147,8 +137,8 @@ public struct Dir {
 		var ent = dirent()
 		let entPtr = UnsafeMutablePointer<UnsafeMutablePointer<dirent>?>.allocate(capacity:  1)
 		defer { entPtr.deallocate(capacity: 1) }
-
-		while readDir(dir, &ent, entPtr) == 0 && entPtr.pointee != nil {
+        
+		while readdir(dir) != nil && entPtr.pointee != nil {
 			let name = ent.d_name
 		#if os(Linux)
 			let nameLen = 1024
